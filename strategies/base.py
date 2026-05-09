@@ -8,62 +8,65 @@ import pandas as pd
 
 @dataclass
 class Signal:
-    """Represents a trading signal produced by a strategy.
-
-    Attributes:
-        symbol: Ticker symbol (e.g. 'AAPL').
-        side: 'buy' or 'sell'.
-        quantity: Number of shares/units.
-        price: Limit price, or None for market orders.
-        strategy: Name of the strategy that emitted the signal.
-    """
+    """Represents a trading signal produced by a strategy."""
 
     symbol: str
-    side: str
+    side: str       # 'buy' or 'sell'
     quantity: float
-    price: Optional[float]
+    price: Optional[float]   # None → market order
     strategy: str
+
+
+FREQUENCIES = frozenset({
+    "tick",
+    "1Min", "5Min", "15Min", "30Min", "1Hour",
+    "1Day", "1Week",
+})
 
 
 class BaseStrategy(ABC):
     """Abstract base for all trading strategies.
 
-    Subclasses must implement `generate_signals`, which receives a DataFrame
-    of OHLCV bars and returns a list of Signal objects.
+    Set the `frequency` class attribute to control the data cadence:
+      - "tick"  → on_tick() is called on every real-time trade tick.
+      - "1Min", "5Min", "15Min", "30Min", "1Hour", "1Day", "1Week"
+                → generate_signals() is called with an OHLCV DataFrame
+                  at the declared bar frequency.
 
     Attributes:
+        frequency: Data frequency this strategy operates on.
         name: Human-readable strategy identifier.
         symbols: List of tickers this strategy trades.
     """
 
-    def __init__(self, name: str, symbols: list[str]) -> None:
-        """Initialize the strategy.
+    frequency: str = "1Day"
 
-        Args:
-            name: Unique strategy name.
-            symbols: Tickers to watch.
-        """
+    def __init__(self, name: str, symbols: list[str]) -> None:
+        if self.frequency not in FREQUENCIES:
+            raise ValueError(
+                f"Invalid frequency {self.frequency!r}. "
+                f"Must be one of {sorted(FREQUENCIES)}"
+            )
         self.name = name
         self.symbols = symbols
 
     @abstractmethod
     def generate_signals(self, bars: pd.DataFrame) -> list[Signal]:
-        """Analyze bars and return trading signals.
+        """Analyze OHLCV bars and return trading signals.
 
-        Args:
-            bars: OHLCV DataFrame indexed by timestamp.
-
-        Returns:
-            List of Signal objects (may be empty).
+        Tick-based strategies implement this as `return []`.
         """
         ...
 
-    def on_fill(self, signal: Signal, filled_price: float, filled_qty: float) -> None:
-        """Called by the engine when an order based on this strategy's signal is filled.
+    def on_tick(self, tick) -> list[Signal]:
+        """Called on every real-time trade tick.
 
-        Args:
-            signal: The original signal that triggered the order.
-            filled_price: Actual execution price.
-            filled_qty: Actual filled quantity.
+        Override for tick-based strategies; default is a no-op.
+        `tick` is an alpaca-py `Trade` object with .symbol, .price,
+        .size, .timestamp attributes.
         """
+        return []
+
+    def on_fill(self, signal: Signal, filled_price: float, filled_qty: float) -> None:
+        """Called by the engine when an order from this strategy is filled."""
         ...

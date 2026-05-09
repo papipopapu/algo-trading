@@ -6,7 +6,11 @@
       "Bash(python *)",
       "Bash(/c/Users/yoyom/OneDrive/Escritorio/algo-trading/algo-trading/.venv/Scripts/pip install *)",
       "Bash(/c/Users/yoyom/OneDrive/Escritorio/algo-trading/algo-trading/.venv/Scripts/pip list *)",
-      "Bash(.venv/Scripts/pytest *)"
+      "Bash(.venv/Scripts/pytest *)",
+      "Bash(.venv\\\\Scripts\\\\python.exe -c \"import pytest_asyncio; print\\(pytest_asyncio.__version__\\)\")",
+      "PowerShell(Remove-Item *)",
+      "Bash(.venv\\\\Scripts\\\\pytest tests/ -v --ignore=tests/test_backtester.py -x)",
+      "Bash(.venv\\\\Scripts\\\\pytest tests/ -v --ignore=tests/test_dashboard.py -x)"
     ]
   }
 }

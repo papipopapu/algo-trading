@@ -8,16 +8,22 @@ from strategies.base import BaseStrategy, Signal
 class SMACrossover(BaseStrategy):
     """Generates signals when a short-period SMA crosses a long-period SMA.
 
+    Operates on daily bars by default (frequency = "1Day"). Pass a different
+    frequency (e.g. "1Hour") to trade on intraday bars.
+
     - Golden cross (short crosses above long) → BUY signal.
     - Death  cross (short crosses below long) → SELL signal.
 
     Designed for a single symbol; uses self.symbols[0] in every emitted signal.
 
     Attributes:
+        frequency: Bar frequency (default "1Day").
         short_window: Lookback period for the fast SMA.
         long_window: Lookback period for the slow SMA.
         qty: Fixed number of shares per signal.
     """
+
+    frequency: str = "1Day"
 
     def __init__(
         self,
@@ -25,9 +31,11 @@ class SMACrossover(BaseStrategy):
         short_window: int = 20,
         long_window: int = 50,
         qty: float = 1.0,
+        frequency: str = "1Day",
     ) -> None:
         if short_window >= long_window:
             raise ValueError("short_window must be strictly less than long_window.")
+        self.frequency = frequency  # instance attribute shadows class default
         super().__init__("sma_crossover", symbols)
         self.short_window = short_window
         self.long_window = long_window

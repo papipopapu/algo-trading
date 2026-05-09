@@ -192,7 +192,7 @@ def test_get_historical_bars_valid_timeframes(timeframe):
 def test_get_historical_bars_invalid_timeframe_raises():
     client, _, _ = _connected_client()
     with pytest.raises(ValueError, match="Unsupported timeframe"):
-        client.get_historical_bars("AAPL", "1Hour", "2024-01-01", "2024-01-31")
+        client.get_historical_bars("AAPL", "invalid", "2024-01-01", "2024-01-31")
 
 
 def test_get_historical_bars_drops_symbol_from_index():

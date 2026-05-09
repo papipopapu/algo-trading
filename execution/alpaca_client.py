@@ -5,7 +5,7 @@ from typing import Optional
 import pandas as pd
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
-from alpaca.data.timeframe import TimeFrame
+from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, OrderType, TimeInForce
 from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
@@ -13,8 +13,13 @@ from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
 from config import config
 
 _TIMEFRAME_MAP: dict[str, TimeFrame] = {
-    "1Day": TimeFrame.Day,
-    "1Week": TimeFrame.Week,
+    "1Min":   TimeFrame.Minute,
+    "5Min":   TimeFrame(5,  TimeFrameUnit.Minute),
+    "15Min":  TimeFrame(15, TimeFrameUnit.Minute),
+    "30Min":  TimeFrame(30, TimeFrameUnit.Minute),
+    "1Hour":  TimeFrame.Hour,
+    "1Day":   TimeFrame.Day,
+    "1Week":  TimeFrame.Week,
     "1Month": TimeFrame.Month,
 }
 
@@ -128,11 +133,11 @@ class AlpacaClient:
         start: str,
         end: str,
     ) -> pd.DataFrame:
-        """Fetch historical OHLCV bars. Only daily or higher timeframes are supported.
+        """Fetch historical OHLCV bars.
 
         Args:
             symbol: Ticker symbol.
-            timeframe: '1Day', '1Week', or '1Month'.
+            timeframe: One of '1Min', '5Min', '15Min', '30Min', '1Hour', '1Day', '1Week'.
             start: ISO-8601 start date string (e.g. '2023-01-01').
             end: ISO-8601 end date string.
 
@@ -140,7 +145,7 @@ class AlpacaClient:
             DataFrame with columns [open, high, low, close, volume] indexed by timestamp.
 
         Raises:
-            ValueError: If timeframe is not in {'1Day', '1Week', '1Month'}.
+            ValueError: If timeframe is not a supported value.
         """
         if timeframe not in _TIMEFRAME_MAP:
             raise ValueError(
