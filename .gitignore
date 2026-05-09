@@ -10,3 +10,16 @@ dist/
 build/
 *.egg-info/
 .pytest_cache/
+
+# Editor / tooling
+.vscode/
+.idea/
+*.code-workspace
+
+# Claude Code
+CLAUDE.md
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
