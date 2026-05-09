@@ -1,0 +1,10 @@
+alpaca-py
+fastapi
+uvicorn
+websockets
+python-dotenv
+sqlalchemy
+pandas
+numpy
+pytest
+pytest-mock

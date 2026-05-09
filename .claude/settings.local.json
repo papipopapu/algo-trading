@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\yoyom\\\\OneDrive\\\\Escritorio\\\\algo-trading\\\\algo-trading\" -Recurse | Where-Object { -not $_.PSIsContainer } | Select-Object FullName)",
+      "Bash(pip install *)",
+      "Bash(python *)",
+      "Bash(/c/Users/yoyom/OneDrive/Escritorio/algo-trading/algo-trading/.venv/Scripts/pip install *)",
+      "Bash(/c/Users/yoyom/OneDrive/Escritorio/algo-trading/algo-trading/.venv/Scripts/pip list *)",
+      "Bash(.venv/Scripts/pytest *)"
+    ]
+  }
+}
